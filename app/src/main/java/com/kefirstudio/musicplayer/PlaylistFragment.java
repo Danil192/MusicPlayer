@@ -1,9 +1,11 @@
 package com.kefirstudio.musicplayer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import androidx.fragment.app.Fragment;
@@ -31,6 +33,16 @@ public class PlaylistFragment extends Fragment {
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, playlistTitles);
         listViewPlaylists.setAdapter(adapter);
+
+        listViewPlaylists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Playlist selectedPlaylist = playlistList.get(position);
+                Intent intent = new Intent(getActivity(), PlaylistDetailsActivity.class);
+                intent.putExtra("playlistTitle", selectedPlaylist.getTitle());
+                startActivity(intent);
+            }
+        });
 
         return view;
     }

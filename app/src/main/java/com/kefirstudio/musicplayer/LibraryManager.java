@@ -50,4 +50,14 @@ public class LibraryManager {
     public List<Playlist> getPlaylistList() {
         return playlistList;
     }
+
+    // Добавление метода getTracksByPlaylist
+    public List<Track> getTracksByPlaylist(String playlistTitle) {
+        for (Playlist playlist : playlistList) {
+            if (playlist.getTitle().equals(playlistTitle)) {
+                return playlist.getTrackList();
+            }
+        }
+        return new ArrayList<>();
+    }
 }

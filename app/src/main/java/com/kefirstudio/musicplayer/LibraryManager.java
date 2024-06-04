@@ -38,7 +38,6 @@ public class LibraryManager {
         playlistList.remove(playlist);
     }
 
-    // Getters for trackList, albumList, and playlistList
     public List<Track> getTrackList() {
         return trackList;
     }
@@ -51,7 +50,6 @@ public class LibraryManager {
         return playlistList;
     }
 
-    // Добавление метода getTracksByPlaylist
     public List<Track> getTracksByPlaylist(String playlistTitle) {
         for (Playlist playlist : playlistList) {
             if (playlist.getTitle().equals(playlistTitle)) {

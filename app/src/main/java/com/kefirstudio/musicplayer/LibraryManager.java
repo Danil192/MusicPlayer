@@ -3,18 +3,34 @@ package com.kefirstudio.musicplayer;
 import java.util.ArrayList;
 import java.util.List;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 public class LibraryManager {
+    private static final String PREFS_NAME = "LibraryPrefs";
+    private static final String KEY_LIBRARY_INITIALIZED = "LibraryInitialized";
+
     private List<Track> trackList;
     private List<Album> albumList;
     private List<Playlist> playlistList;
     private DatabaseHelper dbHelper;
+    private SharedPreferences sharedPreferences;
 
     public LibraryManager(Context context) {
         dbHelper = new DatabaseHelper(context);
+        sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         trackList = new ArrayList<>();
         albumList = new ArrayList<>();
         playlistList = new ArrayList<>();
+    }
+
+    public boolean isLibraryInitialized() {
+        return sharedPreferences.getBoolean(KEY_LIBRARY_INITIALIZED, false);
+    }
+
+    public void setLibraryInitialized() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(KEY_LIBRARY_INITIALIZED, true);
+        editor.apply();
     }
 
     public void addTrack(Track track) {

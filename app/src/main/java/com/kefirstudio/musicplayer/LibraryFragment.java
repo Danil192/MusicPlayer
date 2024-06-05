@@ -5,22 +5,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LibraryFragment extends Fragment {
     private static final int ADD_TRACK_REQUEST = 1;
     private ListView listViewLibrary;
     private LibraryManager libraryManager;
-    private ArrayAdapter<String> adapter;
+    private TrackAdapter adapter;
     private List<Track> trackList;
-    private List<String> trackTitles;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,11 +31,7 @@ public class LibraryFragment extends Fragment {
         trackList = libraryManager.getTrackList();
 
         // Создание адаптера для ListView
-        trackTitles = new ArrayList<>();
-        for (Track track : trackList) {
-            trackTitles.add(track.getTitle() + " - " + track.getArtist());
-        }
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, trackTitles);
+        adapter = new TrackAdapter(getContext(), trackList, libraryManager);
         listViewLibrary.setAdapter(adapter);
 
         listViewLibrary.setOnItemClickListener((parent, view1, position, id) -> {
@@ -76,7 +69,6 @@ public class LibraryFragment extends Fragment {
         // Добавление новой песни в библиотеку
         libraryManager.addTrack(newTrack);
         trackList.add(newTrack);
-        trackTitles.add(newTrack.getTitle() + " - " + newTrack.getArtist());
         adapter.notifyDataSetChanged();
     }
 }

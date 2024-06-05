@@ -80,4 +80,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return trackList;
     }
+
+    public void deleteTrack(Track track) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_TRACKS, COLUMN_TITLE + " = ? AND " + COLUMN_ARTIST + " = ?", new String[]{track.getTitle(), track.getArtist()});
+        db.close();
+    }
 }

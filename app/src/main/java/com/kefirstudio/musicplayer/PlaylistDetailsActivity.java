@@ -1,11 +1,13 @@
 package com.kefirstudio.musicplayer;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,24 +57,50 @@ public class PlaylistDetailsActivity extends AppCompatActivity {
         buttonAddTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addNewTrack();
+                showAddTrackDialog();
             }
         });
     }
 
-    private void addNewTrack() {
-        // Здесь можно реализовать логику для добавления новой песни. Например, можно открыть новое Activity для ввода данных о новой песне.
-        // Для простоты, мы добавим тестовую песню.
-        Track newTrack = new Track("New Song", "New Artist", playlistTitle, 180, 0, "path/to/new_song.mp3");
-        trackList.add(newTrack);
-        trackTitles.add(newTrack.getTitle() + " - " + newTrack.getArtist());
+    private void showAddTrackDialog() {
+        // Получение списка треков из библиотеки
+        List<Track> allTracks = libraryManager.getTrackList();
+        List<String> trackTitles = new ArrayList<>();
+        for (Track track : allTracks) {
+            trackTitles.add(track.getTitle() + " - " + track.getArtist());
+        }
+
+        // Создание AlertDialog для отображения списка треков
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Выберите песню для добавления");
+        builder.setItems(trackTitles.toArray(new String[0]), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Track selectedTrack = allTracks.get(which);
+                addTrackToPlaylist(selectedTrack);
+            }
+        });
+        builder.setNegativeButton("Отмена", null);
+        builder.show();
+    }
+
+    private void addTrackToPlaylist(Track track) {
+        // Добавление трека в плейлист и обновление списка
+        trackList.add(track);
+        trackTitles.add(track.getTitle() + " - " + track.getArtist());
         adapter.notifyDataSetChanged();
-        libraryManager.addTrack(newTrack);
+
+        // Обновление плейлиста в LibraryManager
         for (Playlist playlist : libraryManager.getPlaylistList()) {
             if (playlist.getTitle().equals(playlistTitle)) {
-                playlist.getTrackList().add(newTrack);
+                playlist.getTrackList().add(track);
                 break;
             }
+        }
+
+        // Добавление трека в библиотеку, если его там нет
+        if (!libraryManager.getTrackList().contains(track)) {
+            libraryManager.addTrack(track);
         }
     }
 }

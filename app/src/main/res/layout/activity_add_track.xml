@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editTextTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Название" />
+
+    <EditText
+        android:id="@+id/editTextArtist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Исполнитель" />
+
+    <EditText
+        android:id="@+id/editTextAlbum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Альбом" />
+
+    <EditText
+        android:id="@+id/editTextDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Длительность (в секундах)"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/editTextTrackPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Путь к треку"
+        android:focusable="false"
+        android:clickable="false" />
+
+    <Button
+        android:id="@+id/buttonChooseFile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Выбрать файл" />
+
+    <Button
+        android:id="@+id/buttonAddTrack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Добавить трек" />
+</LinearLayout>

@@ -1,6 +1,9 @@
 package com.kefirstudio.musicplayer;
 
-public class Track {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Track implements Serializable {
     private String title;
     private String artist;
     private String album;
@@ -64,5 +67,21 @@ public class Track {
 
     public void setTrackPath(String trackPath) {
         this.trackPath = trackPath;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Track track = (Track) o;
+        return title.equals(track.title) &&
+                artist.equals(track.artist) &&
+                album.equals(track.album) &&
+                trackPath.equals(track.trackPath);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, artist, album, trackPath);
     }
 }

@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        libraryManager = new LibraryManager();
+        libraryManager = new LibraryManager(this); // Передаем Context
         initializeLibrary();
 
         buttonLibrary = findViewById(R.id.buttonLibrary);
@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         libraryManager.addPlaylist(playlist1);
         libraryManager.addPlaylist(playlist2);
     }
-
 
     public LibraryManager getLibraryManager() {
         return libraryManager;

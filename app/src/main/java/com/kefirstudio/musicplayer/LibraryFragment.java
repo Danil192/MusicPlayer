@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LibraryFragment extends Fragment {
+    private static final int ADD_TRACK_REQUEST = 1;
     private ListView listViewLibrary;
     private LibraryManager libraryManager;
     private ArrayAdapter<String> adapter;
@@ -50,20 +53,30 @@ public class LibraryFragment extends Fragment {
         buttonAddTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addNewTrack();
+                Intent intent = new Intent(getActivity(), AddTrackActivity.class);
+                startActivityForResult(intent, ADD_TRACK_REQUEST);
             }
         });
 
         return view;
     }
 
-    private void addNewTrack() {
-        // Здесь можно реализовать логику для добавления новой песни. Например, можно открыть новое Activity для ввода данных о новой песне.
-        // Для простоты, мы добавим тестовую песню.
-        Track newTrack = new Track("New Song", "New Artist", "New Album", 180, 0, "path/to/new_song.mp3");
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ADD_TRACK_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
+            if (data != null && data.hasExtra("newTrack")) {
+                Track newTrack = (Track) data.getSerializableExtra("newTrack");
+                addNewTrack(newTrack);
+            }
+        }
+    }
+
+    private void addNewTrack(Track newTrack) {
+        // Добавление новой песни в библиотеку
+        libraryManager.addTrack(newTrack);
         trackList.add(newTrack);
         trackTitles.add(newTrack.getTitle() + " - " + newTrack.getArtist());
         adapter.notifyDataSetChanged();
-        libraryManager.addTrack(newTrack);
     }
 }

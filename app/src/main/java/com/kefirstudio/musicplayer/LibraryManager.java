@@ -2,20 +2,31 @@ package com.kefirstudio.musicplayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.content.Context;
 
 public class LibraryManager {
     private List<Track> trackList;
     private List<Album> albumList;
     private List<Playlist> playlistList;
+    private DatabaseHelper dbHelper;
 
-    public LibraryManager() {
+    public LibraryManager(Context context) {
+        dbHelper = new DatabaseHelper(context);
         trackList = new ArrayList<>();
         albumList = new ArrayList<>();
         playlistList = new ArrayList<>();
     }
 
     public void addTrack(Track track) {
-        trackList.add(track);
+        dbHelper.addTrack(track);
+        if (!trackList.contains(track)) {
+            trackList.add(track);
+        }
+    }
+
+    public List<Track> getTrackList() {
+        trackList = dbHelper.getAllTracks();
+        return trackList;
     }
 
     public void addAlbum(Album album) {
@@ -36,10 +47,6 @@ public class LibraryManager {
 
     public void deletePlaylist(Playlist playlist) {
         playlistList.remove(playlist);
-    }
-
-    public List<Track> getTrackList() {
-        return trackList;
     }
 
     public List<Album> getAlbumList() {

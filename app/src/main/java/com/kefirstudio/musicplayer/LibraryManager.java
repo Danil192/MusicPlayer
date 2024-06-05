@@ -18,7 +18,7 @@ public class LibraryManager {
     public LibraryManager(Context context) {
         dbHelper = new DatabaseHelper(context);
         sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        trackList = new ArrayList<>();
+        trackList = dbHelper.getAllTracks();
         albumList = new ArrayList<>();
         playlistList = new ArrayList<>();
     }
@@ -35,13 +35,10 @@ public class LibraryManager {
 
     public void addTrack(Track track) {
         dbHelper.addTrack(track);
-        if (!trackList.contains(track)) {
-            trackList.add(track);
-        }
+        trackList.add(track);
     }
 
     public List<Track> getTrackList() {
-        trackList = dbHelper.getAllTracks();
         return trackList;
     }
 
@@ -54,6 +51,7 @@ public class LibraryManager {
     }
 
     public void deleteTrack(Track track) {
+        dbHelper.deleteTrack(track);
         trackList.remove(track);
     }
 

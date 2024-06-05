@@ -1,55 +1,47 @@
 package com.kefirstudio.musicplayer;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 
 public class TrackAdapter extends ArrayAdapter<Track> {
-    private LibraryManager libraryManager;
+    private final List<Track> tracks;
+    private final LibraryManager libraryManager;
 
-    public TrackAdapter(Context context, List<Track> tracks, LibraryManager libraryManager) {
-        super(context, 0, tracks);
+    public TrackAdapter(@NonNull Context context, @NonNull List<Track> objects, LibraryManager libraryManager) {
+        super(context, 0, objects);
+        this.tracks = objects;
         this.libraryManager = libraryManager;
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        Track track = getItem(position);
-
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_track, parent, false);
         }
 
-        TextView textViewTrackTitle = convertView.findViewById(R.id.textViewTrackTitle);
-        Button buttonDeleteTrack = convertView.findViewById(R.id.buttonDeleteTrack);
+        Track track = getItem(position);
+        TextView trackTitle = convertView.findViewById(R.id.trackTitle);
+        Button deleteButton = convertView.findViewById(R.id.buttonDeleteTrack);
 
-        textViewTrackTitle.setText(track.getTitle() + " - " + track.getArtist());
+        trackTitle.setText(track.getTitle() + " - " + track.getArtist());
 
-        buttonDeleteTrack.setOnClickListener(new View.OnClickListener() {
+        deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Delete Track")
-                        .setMessage("Are you sure you want to delete this track?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                libraryManager.deleteTrack(track);
-                                remove(track);
-                                notifyDataSetChanged();
-                            }
-                        })
-                        .setNegativeButton("No", null)
-                        .show();
+                // Удаление трека из библиотеки
+                libraryManager.deleteTrack(track);
+                tracks.remove(track);
+                notifyDataSetChanged();
             }
         });
 

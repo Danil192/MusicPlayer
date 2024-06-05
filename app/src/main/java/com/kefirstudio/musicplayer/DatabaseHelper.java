@@ -6,7 +6,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +29,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_DURATION = "duration";
     private static final String COLUMN_TRACK_PATH = "track_path";
 
+    private Context context;
+
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, context.getExternalFilesDir(null).getAbsolutePath() + File.separator + DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -38,6 +47,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_TRACK_PATH + " TEXT" +
                 ")";
         db.execSQL(createTableTracks);
+
+        // Скопируйте базу данных в нужный каталог
+        copyDatabaseToExternalStorage();
     }
 
     @Override
@@ -83,7 +95,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void deleteTrack(Track track) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_TRACKS, COLUMN_TITLE + " = ? AND " + COLUMN_ARTIST + " = ?", new String[]{track.getTitle(), track.getArtist()});
+        int deletedRows = db.delete(TABLE_TRACKS, COLUMN_TITLE + " = ? AND " + COLUMN_ARTIST + " = ?", new String[]{track.getTitle(), track.getArtist()});
         db.close();
+        Log.d("DatabaseHelper", "Deleted rows: " + deletedRows);  // Отладочная информация
+    }
+
+    private void copyDatabaseToExternalStorage() {
+        File dbFile = new File(context.getExternalFilesDir(null).getAbsolutePath() + File.separator + DATABASE_NAME);
+        File externalDbFile = new File("C:/Users/mykad/AndroidStudioProjects/MusicPlayer/" + DATABASE_NAME);
+
+        try (FileChannel src = new FileInputStream(dbFile).getChannel();
+             FileChannel dst = new FileOutputStream(externalDbFile).getChannel()) {
+            dst.transferFrom(src, 0, src.size());
+        } catch (IOException e) {
+            Log.e("DatabaseHelper", "Error copying database to external storage", e);
+        }
     }
 }

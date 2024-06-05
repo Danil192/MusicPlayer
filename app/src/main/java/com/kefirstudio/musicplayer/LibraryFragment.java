@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import java.util.List;
 
@@ -34,15 +33,6 @@ public class LibraryFragment extends Fragment {
         adapter = new TrackAdapter(getContext(), trackList, libraryManager);
         listViewLibrary.setAdapter(adapter);
 
-        listViewLibrary.setOnItemClickListener((parent, view1, position, id) -> {
-            Track selectedTrack = trackList.get(position);
-            Intent intent = new Intent(getActivity(), PlayerActivity.class);
-            intent.putExtra("title", selectedTrack.getTitle());
-            intent.putExtra("artist", selectedTrack.getArtist());
-            intent.putExtra("trackPath", selectedTrack.getTrackPath());
-            startActivity(intent);
-        });
-
         buttonAddTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +47,7 @@ public class LibraryFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ADD_TRACK_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
+        if (requestCode == ADD_TRACK_REQUEST && resultCode == getActivity().RESULT_OK) {
             if (data != null && data.hasExtra("newTrack")) {
                 Track newTrack = (Track) data.getSerializableExtra("newTrack");
                 addNewTrack(newTrack);

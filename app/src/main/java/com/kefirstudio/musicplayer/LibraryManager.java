@@ -35,7 +35,7 @@ public class LibraryManager {
 
     public void addTrack(Track track) {
         dbHelper.addTrack(track);
-        trackList.add(track);
+        trackList = dbHelper.getAllTracks();
     }
 
     public List<Track> getTrackList() {
@@ -52,7 +52,7 @@ public class LibraryManager {
 
     public void deleteTrack(Track track) {
         dbHelper.deleteTrack(track);
-        trackList.remove(track);
+        trackList = dbHelper.getAllTracks();
     }
 
     public void deleteAlbum(Album album) {

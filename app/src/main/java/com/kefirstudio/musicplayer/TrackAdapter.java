@@ -1,44 +1,56 @@
 package com.kefirstudio.musicplayer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import java.util.List;
 
 public class TrackAdapter extends ArrayAdapter<Track> {
-    private final List<Track> tracks;
-    private final LibraryManager libraryManager;
+    private Context context;
+    private List<Track> tracks;
+    private LibraryManager libraryManager;
 
-    public TrackAdapter(@NonNull Context context, @NonNull List<Track> objects, LibraryManager libraryManager) {
-        super(context, 0, objects);
-        this.tracks = objects;
+    public TrackAdapter(Context context, List<Track> tracks, LibraryManager libraryManager) {
+        super(context, 0, tracks);
+        this.context = context;
+        this.tracks = tracks;
         this.libraryManager = libraryManager;
     }
 
-    @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_track, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.track_item, parent, false);
         }
 
         Track track = getItem(position);
-        TextView trackTitle = convertView.findViewById(R.id.trackTitle);
-        Button deleteButton = convertView.findViewById(R.id.buttonDeleteTrack);
 
-        trackTitle.setText(track.getTitle() + " - " + track.getArtist());
+        TextView textViewTitle = convertView.findViewById(R.id.textViewTitle);
+        TextView textViewArtist = convertView.findViewById(R.id.textViewArtist);
+        Button buttonDelete = convertView.findViewById(R.id.buttonDelete);
 
-        deleteButton.setOnClickListener(new View.OnClickListener() {
+        textViewTitle.setText(track.getTitle());
+        textViewArtist.setText(track.getArtist());
+
+        textViewTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Удаление трека из библиотеки
+                Intent intent = new Intent(context, PlayerActivity.class);
+                intent.putExtra("title", track.getTitle());
+                intent.putExtra("artist", track.getArtist());
+                intent.putExtra("trackPath", track.getTrackPath());
+                context.startActivity(intent);
+            }
+        });
+
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 libraryManager.deleteTrack(track);
                 tracks.remove(track);
                 notifyDataSetChanged();

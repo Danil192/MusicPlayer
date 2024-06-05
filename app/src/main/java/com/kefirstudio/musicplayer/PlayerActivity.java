@@ -3,8 +3,8 @@ package com.kefirstudio.musicplayer;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,16 +56,13 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
 
-        buttonPlayPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.pause();
-                    buttonPlayPause.setText("Play");
-                } else {
-                    mediaPlayer.start();
-                    buttonPlayPause.setText("Pause");
-                }
+        buttonPlayPause.setOnClickListener(v -> {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                buttonPlayPause.setText("Play");
+            } else {
+                mediaPlayer.start();
+                buttonPlayPause.setText("Pause");
             }
         });
 
@@ -78,10 +75,10 @@ public class PlayerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) { }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) { }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
 

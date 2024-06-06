@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
@@ -56,6 +58,11 @@ public class PlaylistDetailsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        listViewTracks.setOnItemLongClickListener((parent, view, position, id) -> {
+            showDeleteTrackDialog(position);
+            return true;
+        });
+
         buttonAddTrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,5 +101,28 @@ public class PlaylistDetailsActivity extends AppCompatActivity {
 
         // Обновление плейлиста в LibraryManager
         libraryManager.addTrackToPlaylist(playlistId, track.getId());
+    }
+
+    private void showDeleteTrackDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Удалить песню");
+        builder.setMessage("Вы уверены, что хотите удалить эту песню из плейлиста?");
+        builder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteTrackFromPlaylist(position);
+            }
+        });
+        builder.setNegativeButton("Отмена", null);
+        builder.show();
+    }
+
+    private void deleteTrackFromPlaylist(int position) {
+        Track track = trackList.get(position);
+        trackList.remove(position);
+        trackTitles.remove(position);
+        adapter.notifyDataSetChanged();
+        libraryManager.removeTrackFromPlaylist(playlistId, track.getId());
+        Toast.makeText(this, "Песня удалена из плейлиста", Toast.LENGTH_SHORT).show();
     }
 }

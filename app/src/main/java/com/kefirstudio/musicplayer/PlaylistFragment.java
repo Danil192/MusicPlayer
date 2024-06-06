@@ -28,9 +28,9 @@ public class PlaylistFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_playlist, container, false);
-        listViewPlaylists = view.findViewById(R.id.listViewPlaylists);
-        Button buttonCreatePlaylist = view.findViewById(R.id.buttonCreatePlaylist);
+        View rootView = inflater.inflate(R.layout.fragment_playlist, container, false);
+        listViewPlaylists = rootView.findViewById(R.id.listViewPlaylists);
+        Button buttonCreatePlaylist = rootView.findViewById(R.id.buttonCreatePlaylist);
 
         // Получение списка плейлистов из библиотеки
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -47,12 +47,17 @@ public class PlaylistFragment extends Fragment {
 
         listViewPlaylists.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View itemView, int position, long id) {
                 Playlist selectedPlaylist = playlistList.get(position);
                 Intent intent = new Intent(getActivity(), PlaylistDetailsActivity.class);
                 intent.putExtra("playlistName", selectedPlaylist.getTitle());
                 startActivity(intent);
             }
+        });
+
+        listViewPlaylists.setOnItemLongClickListener((parent, itemView, position, id) -> {
+            showDeletePlaylistDialog(position);
+            return true;
         });
 
         buttonCreatePlaylist.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +67,7 @@ public class PlaylistFragment extends Fragment {
             }
         });
 
-        return view;
+        return rootView;
     }
 
     private void showCreatePlaylistDialog() {
@@ -101,5 +106,28 @@ public class PlaylistFragment extends Fragment {
         playlistTitles.add(playlistName);
         adapter.notifyDataSetChanged();
         Toast.makeText(getActivity(), "Плейлист создан", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showDeletePlaylistDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Удалить плейлист");
+        builder.setMessage("Вы уверены, что хотите удалить этот плейлист?");
+        builder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deletePlaylist(position);
+            }
+        });
+        builder.setNegativeButton("Отмена", null);
+        builder.show();
+    }
+
+    private void deletePlaylist(int position) {
+        Playlist playlist = playlistList.get(position);
+        libraryManager.deletePlaylist(playlist);
+        playlistList.remove(position);
+        playlistTitles.remove(position);
+        adapter.notifyDataSetChanged();
+        Toast.makeText(getActivity(), "Плейлист удален", Toast.LENGTH_SHORT).show();
     }
 }

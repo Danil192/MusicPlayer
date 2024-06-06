@@ -203,4 +203,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return playlistId;
     }
+    public void removeTrackFromPlaylist(int playlistId, int trackId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_PLAYLIST_TRACKS, COLUMN_PLAYLIST_ID_FK + " = ? AND " + COLUMN_TRACK_ID_FK + " = ?", new String[]{String.valueOf(playlistId), String.valueOf(trackId)});
+        db.close();
+    }
+    public void deletePlaylist(Playlist playlist) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_PLAYLIST_TRACKS, COLUMN_PLAYLIST_ID_FK + " = ?", new String[]{String.valueOf(playlist.getId())});
+        db.delete(TABLE_PLAYLISTS, COLUMN_PLAYLIST_ID + " = ?", new String[]{String.valueOf(playlist.getId())});
+        db.close();
+    }
 }

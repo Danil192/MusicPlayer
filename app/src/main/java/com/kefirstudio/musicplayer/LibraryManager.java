@@ -85,4 +85,11 @@ public class LibraryManager {
     public int getPlaylistIdByName(String playlistName) {
         return dbHelper.getPlaylistIdByName(playlistName);
     }
+    public void removeTrackFromPlaylist(int playlistId, int trackId) {
+        dbHelper.removeTrackFromPlaylist(playlistId, trackId);
+    }
+    public void deletePlaylist(Playlist playlist) {
+        dbHelper.deletePlaylist(playlist);
+    }
+
 }

@@ -24,7 +24,7 @@ public class PlaylistFragment extends Fragment {
         // Получение списка плейлистов из библиотеки
         MainActivity mainActivity = (MainActivity) getActivity();
         libraryManager = mainActivity.getLibraryManager();
-        List<Playlist> playlistList = libraryManager.getPlaylistList();
+        List<Playlist> playlistList = libraryManager.getAllPlaylists();
 
         // Создание адаптера для ListView
         List<String> playlistTitles = new ArrayList<>();
@@ -39,7 +39,7 @@ public class PlaylistFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Playlist selectedPlaylist = playlistList.get(position);
                 Intent intent = new Intent(getActivity(), PlaylistDetailsActivity.class);
-                intent.putExtra("playlistTitle", selectedPlaylist.getTitle());
+                intent.putExtra("playlistName", selectedPlaylist.getTitle());
                 startActivity(intent);
             }
         });

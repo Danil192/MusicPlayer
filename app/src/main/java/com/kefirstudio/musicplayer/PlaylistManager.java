@@ -12,7 +12,9 @@ public class PlaylistManager {
     }
 
     public void createPlaylist(String title, List<Track> trackList) {
-        Playlist playlist = new Playlist(title, trackList);
+        // Generate a unique ID for the playlist (you might want to use a different method for this)
+        int playlistId = playlistMap.size() + 1;
+        Playlist playlist = new Playlist(playlistId, title, trackList);
         playlistMap.put(title, playlist);
     }
 

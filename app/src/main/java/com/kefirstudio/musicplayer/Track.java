@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Track implements Serializable {
+    private int id;
     private String title;
     private String artist;
     private String album;
@@ -20,7 +21,25 @@ public class Track implements Serializable {
         this.trackPath = trackPath; // Инициализация пути к файлу
     }
 
+    public Track(int id, String title, String artist, String album, long duration, long playTime, String trackPath) {
+        this.id = id;
+        this.title = title;
+        this.artist = artist;
+        this.album = album;
+        this.duration = duration;
+        this.playTime = playTime;
+        this.trackPath = trackPath; // Инициализация пути к файлу
+    }
+
     // Getters и setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }

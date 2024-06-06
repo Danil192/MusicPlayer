@@ -19,7 +19,8 @@ public class PlaylistDetailsActivity extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private List<Track> trackList;
     private List<String> trackTitles;
-    private String playlistTitle;
+    private String playlistName;
+    private int playlistId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +31,13 @@ public class PlaylistDetailsActivity extends AppCompatActivity {
         Button buttonAddTrack = findViewById(R.id.buttonAddTrack);
 
         // Получение данных о плейлисте из Intent
-        playlistTitle = getIntent().getStringExtra("playlistTitle");
+        playlistName = getIntent().getStringExtra("playlistName");
 
         // Получение списка треков из библиотеки
         MusicPlayerApp app = (MusicPlayerApp) getApplication();
         libraryManager = app.getLibraryManager();
-        trackList = libraryManager.getTracksByPlaylist(playlistTitle);
+        playlistId = libraryManager.getPlaylistIdByName(playlistName);
+        trackList = libraryManager.getTracksByPlaylist(playlistId);
 
         // Создание адаптера для ListView
         trackTitles = new ArrayList<>();
@@ -91,16 +93,6 @@ public class PlaylistDetailsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         // Обновление плейлиста в LibraryManager
-        for (Playlist playlist : libraryManager.getPlaylistList()) {
-            if (playlist.getTitle().equals(playlistTitle)) {
-                playlist.getTrackList().add(track);
-                break;
-            }
-        }
-
-        // Добавление трека в библиотеку, если его там нет
-        if (!libraryManager.getTrackList().contains(track)) {
-            libraryManager.addTrack(track);
-        }
+        libraryManager.addTrackToPlaylist(playlistId, track.getId());
     }
 }

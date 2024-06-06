@@ -1,9 +1,10 @@
 package com.kefirstudio.musicplayer;
 
-import java.util.ArrayList;
-import java.util.List;
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LibraryManager {
     private static final String PREFS_NAME = "LibraryPrefs";
@@ -18,7 +19,7 @@ public class LibraryManager {
     public LibraryManager(Context context) {
         dbHelper = new DatabaseHelper(context);
         sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        trackList = dbHelper.getAllTracks();
+        trackList = new ArrayList<>();
         albumList = new ArrayList<>();
         playlistList = new ArrayList<>();
     }
@@ -35,11 +36,19 @@ public class LibraryManager {
 
     public void addTrack(Track track) {
         dbHelper.addTrack(track);
-        trackList = dbHelper.getAllTracks();
+        if (!trackList.contains(track)) {
+            trackList.add(track);
+        }
     }
 
     public List<Track> getTrackList() {
+        trackList = dbHelper.getAllTracks();
         return trackList;
+    }
+
+    public void deleteTrack(Track track) {
+        dbHelper.deleteTrack(track);
+        trackList.remove(track);
     }
 
     public void addAlbum(Album album) {
@@ -47,20 +56,15 @@ public class LibraryManager {
     }
 
     public void addPlaylist(Playlist playlist) {
-        playlistList.add(playlist);
+        dbHelper.addPlaylist(playlist);
+        if (!playlistList.contains(playlist)) {
+            playlistList.add(playlist);
+        }
     }
 
-    public void deleteTrack(Track track) {
-        dbHelper.deleteTrack(track);
-        trackList = dbHelper.getAllTracks();
-    }
-
-    public void deleteAlbum(Album album) {
-        albumList.remove(album);
-    }
-
-    public void deletePlaylist(Playlist playlist) {
-        playlistList.remove(playlist);
+    public List<Playlist> getAllPlaylists() {
+        playlistList = dbHelper.getAllPlaylists();
+        return playlistList;
     }
 
     public List<Album> getAlbumList() {
@@ -71,12 +75,15 @@ public class LibraryManager {
         return playlistList;
     }
 
-    public List<Track> getTracksByPlaylist(String playlistTitle) {
-        for (Playlist playlist : playlistList) {
-            if (playlist.getTitle().equals(playlistTitle)) {
-                return playlist.getTrackList();
-            }
-        }
-        return new ArrayList<>();
+    public void addTrackToPlaylist(int playlistId, int trackId) {
+        dbHelper.addTrackToPlaylist(playlistId, trackId);
+    }
+
+    public List<Track> getTracksByPlaylist(int playlistId) {
+        return dbHelper.getTracksByPlaylist(playlistId);
+    }
+
+    public int getPlaylistIdByName(String playlistName) {
+        return dbHelper.getPlaylistIdByName(playlistName);
     }
 }

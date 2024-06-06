@@ -67,6 +67,7 @@ public class AddTrackActivity extends AppCompatActivity {
         long duration = Long.parseLong(editTextDuration.getText().toString());
         String trackPath = editTextTrackPath.getText().toString();
 
+        // Создаем новый трек без идентификатора
         Track newTrack = new Track(title, artist, album, duration, 0, trackPath);
 
         Intent resultIntent = new Intent();

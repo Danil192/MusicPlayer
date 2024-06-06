@@ -2,7 +2,6 @@ package com.kefirstudio.musicplayer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -58,6 +58,7 @@ public class PlaylistActivity extends AppCompatActivity {
         List<Playlist> playlists = libraryManager.getAllPlaylists();
         playlistList = new ArrayList<>();
         for (Playlist playlist : playlists) {
+
             playlistList.add(playlist.getTitle());
         }
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, playlistList);

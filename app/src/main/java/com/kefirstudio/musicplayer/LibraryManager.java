@@ -34,10 +34,15 @@ public class LibraryManager {
     }
 
     public void addTrack(Track track) {
-        dbHelper.addTrack(track);
-        if (!trackList.contains(track)) {
-            trackList.add(track);
+        // Проверка на существование трека в библиотеке
+        for (Track existingTrack : trackList) {
+            if (existingTrack.equals(track)) {
+                return; // Трек уже существует, выходим из метода
+            }
         }
+
+        dbHelper.addTrack(track);
+        trackList.add(track);
     }
 
     public List<Track> getTrackList() {

@@ -1,5 +1,6 @@
 package com.kefirstudio.musicplayer;
 
+import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -19,6 +21,8 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView trackArtist;
     private SeekBar seekBar;
     private Button buttonPlayPause;
+    private TextView startTime;
+    private TextView endTime;
     private MediaPlayer mediaPlayer;
     private Handler handler = new Handler();
     private Runnable updateSeekBar;
@@ -34,6 +38,8 @@ public class PlayerActivity extends AppCompatActivity {
         trackArtist = findViewById(R.id.trackArtist);
         seekBar = findViewById(R.id.seekBar);
         buttonPlayPause = findViewById(R.id.buttonPlayPause);
+        startTime = findViewById(R.id.startTime);
+        endTime = findViewById(R.id.endTime);
 
         buttonPlayPause.setEnabled(false);
 
@@ -65,7 +71,9 @@ public class PlayerActivity extends AppCompatActivity {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setOnPreparedListener(mp -> {
             isPrepared = true;
-            seekBar.setMax(mediaPlayer.getDuration());
+            int duration = mediaPlayer.getDuration();
+            seekBar.setMax(duration);
+            endTime.setText(formatTime(duration));
             buttonPlayPause.setEnabled(true);  // Делаем кнопку активной после подготовки
             buttonPlayPause.setText("Play");
         });
@@ -76,7 +84,7 @@ public class PlayerActivity extends AppCompatActivity {
         });
 
         try {
-            mediaPlayer.setDataSource(trackUriString);
+            mediaPlayer.setDataSource(this, Uri.parse(trackUriString));
             mediaPlayer.prepareAsync();  // Используем prepareAsync для асинхронной подготовки
         } catch (IOException e) {
             Log.e(TAG, "Error setting data source", e);
@@ -103,6 +111,7 @@ public class PlayerActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser && isPrepared) {
                     mediaPlayer.seekTo(progress);
+                    startTime.setText(formatTime(progress));
                 }
             }
 
@@ -117,10 +126,19 @@ public class PlayerActivity extends AppCompatActivity {
     private void updateSeekBar() {
         if (isPrepared) {
             seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            startTime.setText(formatTime(mediaPlayer.getCurrentPosition()));
             if (mediaPlayer.isPlaying()) {
                 handler.postDelayed(this::updateSeekBar, 1000);
             }
         }
+    }
+
+    @SuppressLint("DefaultLocale")
+    private String formatTime(int millis) {
+        return String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(millis),
+                TimeUnit.MILLISECONDS.toSeconds(millis) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
     }
 
     @Override

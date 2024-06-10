@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -19,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonPlaylists;
     private Button buttonSettings;
     private LibraryManager libraryManager;
+    private TrackAdapter trackAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,21 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             loadFragment(new LibraryFragment());
         }
+
+        SearchView searchView = findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                List<Track> filteredTracks = libraryManager.searchTracks(newText);
+                updateLibraryFragment(filteredTracks);
+                return true;
+            }
+        });
     }
 
     private void loadFragment(Fragment fragment) {
@@ -68,6 +87,13 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
+    }
+
+    private void updateLibraryFragment(List<Track> filteredTracks) {
+        LibraryFragment libraryFragment = (LibraryFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (libraryFragment != null) {
+            libraryFragment.updateTrackList(filteredTracks);
+        }
     }
 
     private void initializeLibrary() {

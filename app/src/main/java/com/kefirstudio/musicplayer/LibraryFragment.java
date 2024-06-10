@@ -7,8 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import java.util.List;
 
 public class LibraryFragment extends Fragment {
@@ -57,5 +59,11 @@ public class LibraryFragment extends Fragment {
         libraryManager.addTrack(newTrack);
         trackList.add(newTrack);  // Добавляем новый трек в локальный список
         adapter.notifyDataSetChanged();  // Уведомляем адаптер об изменениях
+    }
+
+    public void updateTrackList(List<Track> filteredTracks) {
+        trackList.clear();
+        trackList.addAll(filteredTracks);
+        adapter.notifyDataSetChanged();
     }
 }

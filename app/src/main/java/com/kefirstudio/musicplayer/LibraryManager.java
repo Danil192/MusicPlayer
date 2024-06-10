@@ -3,6 +3,8 @@ package com.kefirstudio.musicplayer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class LibraryManager {
@@ -83,5 +85,16 @@ public class LibraryManager {
 
     public void deletePlaylist(Playlist playlist) {
         dbHelper.deletePlaylist(playlist);
+    }
+
+    public List<Track> searchTracks(String query) {
+        List<Track> allTracks = getTrackList();
+        List<Track> filteredTracks = new ArrayList<>();
+        for (Track track : allTracks) {
+            if (track.getTitle().toLowerCase().contains(query.toLowerCase())) {
+                filteredTracks.add(track);
+            }
+        }
+        return filteredTracks;
     }
 }

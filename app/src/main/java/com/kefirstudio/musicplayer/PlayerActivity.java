@@ -6,12 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +35,7 @@ public class PlayerActivity extends AppCompatActivity {
     private LibraryManager libraryManager;
     private List<Track> trackList;
     private int currentTrackIndex = 0;
+    private boolean isPlaylist = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +52,19 @@ public class PlayerActivity extends AppCompatActivity {
         endTime = findViewById(R.id.endTime);
 
         libraryManager = new LibraryManager(this);
-        trackList = libraryManager.getTrackList(); // Получение списка треков из базы данных
 
-        if (trackList.isEmpty()) {
+        // Получение данных из Intent
+        int playlistId = getIntent().getIntExtra("playlistId", -1);
+        currentTrackIndex = getIntent().getIntExtra("trackIndex", 0);
+
+        if (playlistId != -1) {
+            trackList = libraryManager.getTracksByPlaylist(playlistId);
+            isPlaylist = true;
+        } else {
+            trackList = libraryManager.getTrackList();
+        }
+
+        if (trackList == null || trackList.isEmpty()) {
             Toast.makeText(this, "Нет треков для воспроизведения", Toast.LENGTH_SHORT).show();
             return;
         }

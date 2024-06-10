@@ -1,16 +1,15 @@
 package com.kefirstudio.musicplayer;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,17 +49,10 @@ public class PlaylistDetailsActivity extends AppCompatActivity {
         listViewTracks.setAdapter(adapter);
 
         listViewTracks.setOnItemClickListener((parent, view, position, id) -> {
-            Track selectedTrack = trackList.get(position);
             Intent intent = new Intent(PlaylistDetailsActivity.this, PlayerActivity.class);
-            intent.putExtra("title", selectedTrack.getTitle());
-            intent.putExtra("artist", selectedTrack.getArtist());
-            intent.putExtra("trackPath", selectedTrack.getTrackPath());
+            intent.putExtra("playlistId", playlistId);
+            intent.putExtra("trackIndex", position);
             startActivity(intent);
-        });
-
-        listViewTracks.setOnItemLongClickListener((parent, view, position, id) -> {
-            showDeleteTrackDialog(position);
-            return true;
         });
 
         buttonAddTrack.setOnClickListener(new View.OnClickListener() {
@@ -82,12 +74,9 @@ public class PlaylistDetailsActivity extends AppCompatActivity {
         // Создание AlertDialog для отображения списка треков
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Выберите песню для добавления");
-        builder.setItems(trackTitles.toArray(new String[0]), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Track selectedTrack = allTracks.get(which);
-                addTrackToPlaylist(selectedTrack);
-            }
+        builder.setItems(trackTitles.toArray(new String[0]), (dialog, which) -> {
+            Track selectedTrack = allTracks.get(which);
+            addTrackToPlaylist(selectedTrack);
         });
         builder.setNegativeButton("Отмена", null);
         builder.show();
@@ -101,28 +90,5 @@ public class PlaylistDetailsActivity extends AppCompatActivity {
 
         // Обновление плейлиста в LibraryManager
         libraryManager.addTrackToPlaylist(playlistId, track.getId());
-    }
-
-    private void showDeleteTrackDialog(final int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Удалить песню");
-        builder.setMessage("Вы уверены, что хотите удалить эту песню из плейлиста?");
-        builder.setPositiveButton("Удалить", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteTrackFromPlaylist(position);
-            }
-        });
-        builder.setNegativeButton("Отмена", null);
-        builder.show();
-    }
-
-    private void deleteTrackFromPlaylist(int position) {
-        Track track = trackList.get(position);
-        trackList.remove(position);
-        trackTitles.remove(position);
-        adapter.notifyDataSetChanged();
-        libraryManager.removeTrackFromPlaylist(playlistId, track.getId());
-        Toast.makeText(this, "Песня удалена из плейлиста", Toast.LENGTH_SHORT).show();
     }
 }

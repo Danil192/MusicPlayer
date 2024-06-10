@@ -3,7 +3,6 @@ package com.kefirstudio.musicplayer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,6 @@ public class LibraryManager {
     }
 
     public void addTrack(Track track) {
-        // Проверка на существование трека в базе данных
         if (!dbHelper.trackExists(track)) {
             dbHelper.addTrack(track);
         } else {

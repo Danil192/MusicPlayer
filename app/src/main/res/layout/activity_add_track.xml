@@ -94,6 +94,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextTrackPath"
         android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true"
         android:text="Выбрать файл" />
 
     <Button

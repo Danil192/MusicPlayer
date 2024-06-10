@@ -6,12 +6,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerActivity extends AppCompatActivity {
@@ -21,6 +23,8 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView trackArtist;
     private SeekBar seekBar;
     private Button buttonPlayPause;
+    private Button buttonPrevious;
+    private Button buttonNext;
     private TextView startTime;
     private TextView endTime;
     private MediaPlayer mediaPlayer;
@@ -28,6 +32,9 @@ public class PlayerActivity extends AppCompatActivity {
     private Runnable updateSeekBar;
 
     private boolean isPrepared = false;
+    private LibraryManager libraryManager;
+    private List<Track> trackList;
+    private int currentTrackIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,58 +45,20 @@ public class PlayerActivity extends AppCompatActivity {
         trackArtist = findViewById(R.id.trackArtist);
         seekBar = findViewById(R.id.seekBar);
         buttonPlayPause = findViewById(R.id.buttonPlayPause);
+        buttonPrevious = findViewById(R.id.buttonPrevious);
+        buttonNext = findViewById(R.id.buttonNext);
         startTime = findViewById(R.id.startTime);
         endTime = findViewById(R.id.endTime);
 
-        buttonPlayPause.setEnabled(false);
+        libraryManager = new LibraryManager(this);
+        trackList = libraryManager.getTrackList(); // Получение списка треков из базы данных
 
-        initializePlayer();
-    }
-
-    private void initializePlayer() {
-        // Получение данных о треке из Intent
-        String title = getIntent().getStringExtra("title");
-        String artist = getIntent().getStringExtra("artist");
-        String trackUriString = getIntent().getStringExtra("trackPath");
-
-        if (trackUriString == null) {
-            Log.e(TAG, "trackUriString is null");
-            Toast.makeText(this, "Error: Track path is null", Toast.LENGTH_SHORT).show();
+        if (trackList.isEmpty()) {
+            Toast.makeText(this, "Нет треков для воспроизведения", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (title != null) {
-            trackTitle.setText(title);
-        }
-        if (artist != null) {
-            trackArtist.setText(artist);
-        }
-
-        Log.d(TAG, "Track Path: " + trackUriString);
-
-        // Инициализация MediaPlayer
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setOnPreparedListener(mp -> {
-            isPrepared = true;
-            int duration = mediaPlayer.getDuration();
-            seekBar.setMax(duration);
-            endTime.setText(formatTime(duration));
-            buttonPlayPause.setEnabled(true);  // Делаем кнопку активной после подготовки
-            buttonPlayPause.setText("Play");
-        });
-        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-            Log.e(TAG, "MediaPlayer error: " + what + ", " + extra);
-            Toast.makeText(PlayerActivity.this, "MediaPlayer error: " + what + ", " + extra, Toast.LENGTH_SHORT).show();
-            return false;
-        });
-
-        try {
-            mediaPlayer.setDataSource(this, Uri.parse(trackUriString));
-            mediaPlayer.prepareAsync();  // Используем prepareAsync для асинхронной подготовки
-        } catch (IOException e) {
-            Log.e(TAG, "Error setting data source", e);
-            Toast.makeText(this, "Error loading audio file", Toast.LENGTH_SHORT).show();
-        }
+        initializePlayer(currentTrackIndex);
 
         buttonPlayPause.setOnClickListener(v -> {
             if (isPrepared) {
@@ -106,6 +75,10 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
 
+        buttonPrevious.setOnClickListener(v -> playPreviousTrack());
+
+        buttonNext.setOnClickListener(v -> playNextTrack());
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -121,6 +94,40 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
+    }
+
+    private void initializePlayer(int trackIndex) {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+
+        Track currentTrack = trackList.get(trackIndex);
+
+        trackTitle.setText(currentTrack.getTitle());
+        trackArtist.setText(currentTrack.getArtist());
+
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnPreparedListener(mp -> {
+            isPrepared = true;
+            int duration = mediaPlayer.getDuration();
+            seekBar.setMax(duration);
+            endTime.setText(formatTime(duration));
+            buttonPlayPause.setEnabled(true);
+            buttonPlayPause.setText("Play");
+        });
+        mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+            Log.e(TAG, "MediaPlayer error: " + what + ", " + extra);
+            Toast.makeText(PlayerActivity.this, "MediaPlayer error: " + what + ", " + extra, Toast.LENGTH_SHORT).show();
+            return false;
+        });
+
+        try {
+            mediaPlayer.setDataSource(this, Uri.parse(currentTrack.getTrackPath()));
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            Log.e(TAG, "Error setting data source", e);
+            Toast.makeText(this, "Error loading audio file", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void updateSeekBar() {
@@ -149,5 +156,23 @@ public class PlayerActivity extends AppCompatActivity {
             mediaPlayer = null;
         }
         handler.removeCallbacks(updateSeekBar);
+    }
+
+    private void playPreviousTrack() {
+        if (currentTrackIndex > 0) {
+            currentTrackIndex--;
+            initializePlayer(currentTrackIndex);
+        } else {
+            Toast.makeText(this, "Это первый трек", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void playNextTrack() {
+        if (currentTrackIndex < trackList.size() - 1) {
+            currentTrackIndex++;
+            initializePlayer(currentTrackIndex);
+        } else {
+            Toast.makeText(this, "Это последний трек", Toast.LENGTH_SHORT).show();
+        }
     }
 }

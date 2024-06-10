@@ -55,7 +55,7 @@ public class AddTrackActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            String trackPath = data.getData().getPath();
+            String trackPath = data.getData().toString();
             editTextTrackPath.setText(trackPath);
         }
     }
@@ -67,7 +67,7 @@ public class AddTrackActivity extends AppCompatActivity {
         long duration = Long.parseLong(editTextDuration.getText().toString());
         String trackPath = editTextTrackPath.getText().toString();
 
-        // Создаем новый трек без идентификатора
+        // Создаем новый трек
         Track newTrack = new Track(title, artist, album, duration, 0, trackPath);
 
         Intent resultIntent = new Intent();

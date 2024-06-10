@@ -14,7 +14,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "musicplayer.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String TABLE_TRACKS = "tracks";
     private static final String COLUMN_ID = "id";
@@ -82,15 +82,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public void addTrack(Track track) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_TITLE, track.getTitle());
-        values.put(COLUMN_ARTIST, track.getArtist());
-        values.put(COLUMN_ALBUM, track.getAlbum());
-        values.put(COLUMN_DURATION, track.getDuration());
-        values.put(COLUMN_TRACK_PATH, track.getTrackPath());
-        db.insert(TABLE_TRACKS, null, values);
-        db.close();
+        if (!trackExists(track)) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_TITLE, track.getTitle());
+            values.put(COLUMN_ARTIST, track.getArtist());
+            values.put(COLUMN_ALBUM, track.getAlbum());
+            values.put(COLUMN_DURATION, track.getDuration());
+            values.put(COLUMN_TRACK_PATH, track.getTrackPath());
+            db.insert(TABLE_TRACKS, null, values);
+            db.close();
+        } else {
+            Log.d("DatabaseHelper", "Track already exists: " + track.getTitle());
+        }
     }
 
     public List<Track> getAllTracks() {
@@ -213,5 +217,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_PLAYLIST_TRACKS, COLUMN_PLAYLIST_ID_FK + " = ?", new String[]{String.valueOf(playlist.getId())});
         db.delete(TABLE_PLAYLISTS, COLUMN_PLAYLIST_ID + " = ?", new String[]{String.valueOf(playlist.getId())});
         db.close();
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        onUpgrade(db, oldVersion, newVersion);
+    }
+
+    public boolean trackExists(Track track) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT 1 FROM " + TABLE_TRACKS + " WHERE " + COLUMN_TITLE + " = ? AND " + COLUMN_ARTIST + " = ? AND " + COLUMN_ALBUM + " = ? AND " + COLUMN_TRACK_PATH + " = ?",
+                new String[]{track.getTitle(), track.getArtist(), track.getAlbum(), track.getTrackPath()});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        db.close();
+        return exists;
     }
 }

@@ -226,7 +226,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean trackExists(Track track) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT 1 FROM " + TABLE_TRACKS + " WHERE " + COLUMN_TITLE + " = ? AND " + COLUMN_ARTIST + " = ? AND " + COLUMN_ALBUM + " = ? AND " + COLUMN_TRACK_PATH + " = ?",
+        Cursor cursor = db.rawQuery("SELECT 1 FROM " + TABLE_TRACKS + " WHERE " +
+                        COLUMN_TITLE + " = ? AND " +
+                        COLUMN_ARTIST + " = ? AND " +
+                        COLUMN_ALBUM + " = ? AND " +
+                        COLUMN_TRACK_PATH + " = ?",
                 new String[]{track.getTitle(), track.getArtist(), track.getAlbum(), track.getTrackPath()});
         boolean exists = cursor.getCount() > 0;
         cursor.close();

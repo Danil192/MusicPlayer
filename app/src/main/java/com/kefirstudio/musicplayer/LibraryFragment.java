@@ -24,12 +24,10 @@ public class LibraryFragment extends Fragment {
         listViewLibrary = view.findViewById(R.id.listViewLibrary);
         Button buttonAddTrack = view.findViewById(R.id.buttonAddTrack);
 
-        // Получение списка треков из библиотеки
         MainActivity mainActivity = (MainActivity) getActivity();
         libraryManager = mainActivity.getLibraryManager();
         trackList = libraryManager.getTrackList();
 
-        // Создание адаптера для ListView
         adapter = new TrackAdapter(getContext(), trackList, libraryManager);
         listViewLibrary.setAdapter(adapter);
 
@@ -56,9 +54,8 @@ public class LibraryFragment extends Fragment {
     }
 
     private void addNewTrack(Track newTrack) {
-        // Добавление новой песни в библиотеку
         libraryManager.addTrack(newTrack);
-        trackList.add(newTrack);
-        adapter.notifyDataSetChanged();
+        trackList.add(newTrack);  // Добавляем новый трек в локальный список
+        adapter.notifyDataSetChanged();  // Уведомляем адаптер об изменениях
     }
 }

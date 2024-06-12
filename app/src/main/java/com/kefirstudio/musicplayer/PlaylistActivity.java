@@ -27,7 +27,7 @@ public class PlaylistActivity extends AppCompatActivity {
 
         libraryManager = ((MusicPlayerApp) getApplication()).getLibraryManager();
 
-        editTextPlaylistName = findViewById(R.id.editTextPlaylistName);
+        //editTextPlaylistName = findViewById(R.id.editTextPlaylistName);
         buttonAddPlaylist = findViewById(R.id.buttonAddPlaylist);
         listViewPlaylists = findViewById(R.id.listViewPlaylists);
 

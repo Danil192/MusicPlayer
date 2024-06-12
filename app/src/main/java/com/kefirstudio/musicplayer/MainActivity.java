@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonSettings;
     private LibraryManager libraryManager;
     private TrackAdapter trackAdapter;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +39,13 @@ public class MainActivity extends AppCompatActivity {
         buttonLibrary = findViewById(R.id.buttonLibrary);
         buttonPlaylists = findViewById(R.id.buttonPlaylists);
         buttonSettings = findViewById(R.id.buttonSettings);
+        searchView = findViewById(R.id.searchView);
 
         buttonLibrary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadFragment(new LibraryFragment());
+                searchView.setVisibility(View.VISIBLE); // Показать строку поиска
             }
         });
 
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadFragment(new PlaylistFragment());
+                searchView.setVisibility(View.GONE); // Скрыть строку поиска
             }
         });
 
@@ -64,10 +68,10 @@ public class MainActivity extends AppCompatActivity {
         // Load the default fragment
         if (savedInstanceState == null) {
             loadFragment(new LibraryFragment());
+            searchView.setVisibility(View.VISIBLE); // Показать строку поиска
         }
 
-        SearchView searchView = findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;

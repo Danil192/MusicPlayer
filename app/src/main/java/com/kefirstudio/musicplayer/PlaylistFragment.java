@@ -128,7 +128,16 @@ public class PlaylistFragment extends Fragment {
             }
         });
         builder.setNegativeButton("Отмена", null);
-        builder.show();
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK);
+            }
+        });
+        dialog.show();
     }
 
     private void deletePlaylist(int position) {
